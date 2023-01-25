@@ -23,7 +23,7 @@ val retrofit: Retrofit =
         .build()
 
 interface MovieService{
-    @GET("now_playing?api_key=b0b3c17892a58c619ef49d6e3010d379&language=en-US&page=1")
+    @GET("now_playing?api_key=b0b3c17892a58c619ef49d6e3010d379&language=pt-BR&page=1")
      fun getMovies() : Call<MovieResponse>
 }
 

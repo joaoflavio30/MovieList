@@ -18,5 +18,21 @@
         android:id="@+id/movieDetailsFragment"
         android:name="com.example.moovielist.MovieDetailsFragment"
         android:label="fragment_movie_details"
-        tools:layout="@layout/fragment_movie_details" />
+        tools:layout="@layout/fragment_movie_details" >
+        <action
+            android:id="@+id/action_movieDetailsFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="movie_image"
+            app:argType="string" />
+        <argument
+            android:name="movie_title"
+            app:argType="string" />
+        <argument
+            android:name="movie_note"
+            app:argType="string" />
+        <argument
+            android:name="movie_description"
+            app:argType="string" />
+    </fragment>
 </navigation>

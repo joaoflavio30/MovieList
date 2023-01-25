@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Top Gun. Maverick"
-           style="@style/MovieName"
+            style="@style/MovieName"
             app:layout_constraintStart_toEndOf="@id/movie_img"
             app:layout_constraintTop_toTopOf="parent" />
 
