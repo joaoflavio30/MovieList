@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Filmes</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="header_title">Filmes</string>
+    <string name="header_year">2023</string>
+
+    <string name="movie_1_title">The Shawshank Redemption</string>
+    <string name="movie_1_release_date">1994-10-14</string>
+    <string name="movie_1_average_vote">9.3</string>
+
+    <string name="movie_2_title">The Godfather</string>
+    <string name="movie_2_release_date">1972-03-24</string>
+    <string name="movie_2_average_vote">9.2</string>
+
+    <string name="movie_3_title">The Dark Knight</string>
+    <string name="movie_3_release_date">2008-07-18</string>
+    <string name="movie_3_average_vote">9.0</string>
+</resources>
