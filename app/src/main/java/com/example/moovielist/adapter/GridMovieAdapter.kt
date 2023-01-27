@@ -8,16 +8,16 @@ import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moovielist.ui.ListFragmentDirections
 import com.example.moovielist.R
 import com.example.moovielist.adapter.MovieAdapter.ViewHolder.Companion.IMAGE_URL
 import com.example.moovielist.datasource.MovieData
-import com.example.moovielist.ui.ListFragmentDirections
-import com.example.moovielist.utils.limitedDescription
 
-class MovieAdapter :
-    RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+class GridMovieAdapter :
+    RecyclerView.Adapter<GridMovieAdapter.ViewHolder>() {
 
-    private var dataSet = mutableListOf<MovieData>()
+
+private var dataSet = mutableListOf<MovieData>()
 
     fun setMovieList(lives: List<MovieData>) {
         this.dataSet = lives.toMutableList()
@@ -34,13 +34,9 @@ class MovieAdapter :
 
             val movieImage = itemView.findViewById<ImageView>(R.id.movie_img)
             val movieName = itemView.findViewById<TextView>(R.id.movie_name)
-            val movieDate = itemView.findViewById<TextView>(R.id.release_date)
-            val movieVoteAverage = itemView.findViewById<TextView>(R.id.vote_average)
 
             movieImage.load(IMAGE_URL + movie.post)
-            movieName.text = movie.originalTitle.limitedDescription(25)
-            movieDate.text = movie.releaseDate
-            movieVoteAverage.text = movie.voteAverage
+            movieName.text = movie.originalTitle
         }
 
 
@@ -48,14 +44,13 @@ class MovieAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
-        val layout = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        val layout = LayoutInflater.from(parent.context).inflate(R.layout.grid_list, parent, false)
 
         return ViewHolder(layout)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindData(dataSet[position])
-
 
         holder.itemView.setOnClickListener {
             val action = ListFragmentDirections.actionListFragmentToMovieDetailsFragment(
@@ -68,8 +63,6 @@ class MovieAdapter :
             navController.navigate(action)
 
         }
-
-
     }
 
     override fun getItemCount(): Int = dataSet.size
