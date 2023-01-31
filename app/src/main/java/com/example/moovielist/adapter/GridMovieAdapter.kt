@@ -10,16 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moovielist.ui.ListFragmentDirections
 import com.example.moovielist.R
-import com.example.moovielist.adapter.MovieAdapter.ViewHolder.Companion.IMAGE_URL
-import com.example.moovielist.datasource.MovieData
+import com.example.moovielist.datasource.RecyclerViewItem
+import com.example.moovielist.utils.Commons
 
 class GridMovieAdapter :
     RecyclerView.Adapter<GridMovieAdapter.ViewHolder>() {
 
 
-private var dataSet = mutableListOf<MovieData>()
+private var dataSet = mutableListOf<RecyclerViewItem.MovieData>()
 
-    fun setMovieList(lives: List<MovieData>) {
+    fun setMovieList(lives: List<RecyclerViewItem.MovieData>) {
         this.dataSet = lives.toMutableList()
         notifyDataSetChanged()
     }
@@ -30,7 +30,7 @@ private var dataSet = mutableListOf<MovieData>()
             const val IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
         }
 
-        fun bindData(movie: MovieData) {
+        fun bindData(movie: RecyclerViewItem.MovieData) {
 
             val movieImage = itemView.findViewById<ImageView>(R.id.movie_img)
             val movieName = itemView.findViewById<TextView>(R.id.movie_name)
@@ -54,7 +54,7 @@ private var dataSet = mutableListOf<MovieData>()
 
         holder.itemView.setOnClickListener {
             val action = ListFragmentDirections.actionListFragmentToMovieDetailsFragment(
-                IMAGE_URL + dataSet[position].post,
+                Commons.IMAGE_URL + dataSet[position].post,
                 dataSet[position].originalTitle,
                 dataSet[position].voteAverage,
                 dataSet[position].movieId

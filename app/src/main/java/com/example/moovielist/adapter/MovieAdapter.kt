@@ -3,76 +3,144 @@ package com.example.moovielist.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.example.moovielist.R
-import com.example.moovielist.adapter.MovieAdapter.ViewHolder.Companion.IMAGE_URL
-import com.example.moovielist.datasource.MovieData
-import com.example.moovielist.ui.ListFragmentDirections
-import com.example.moovielist.utils.limitedDescription
+import com.example.moovielist.databinding.GridListBinding
+import com.example.moovielist.databinding.HeaderListBinding
+import com.example.moovielist.databinding.ListItemBinding
+import com.example.moovielist.datasource.RecyclerViewItem
+import com.example.moovielist.utils.Commons
 
-class MovieAdapter :
-    RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+sealed class Adapters :
+    RecyclerView.Adapter<RecyclerViewHolder>() {
 
-    private var dataSet = mutableListOf<MovieData>()
 
-    fun setMovieList(lives: List<MovieData>) {
-        this.dataSet = lives.toMutableList()
-        notifyDataSetChanged()
-    }
+    class MovieAdapter(private val click : (View) -> Unit) : Adapters() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var dataSet = listOf<RecyclerViewItem>()
 
-        companion object {
-            const val IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
+        fun setMovieList(lives: List<RecyclerViewItem>) {
+            this.dataSet = lives
+            notifyDataSetChanged()
         }
 
-        fun bindData(movie: MovieData) {
+        interface OnImageClickListener {
+            fun onImageClick(position: Int)
+        }
 
-            val movieImage = itemView.findViewById<ImageView>(R.id.movie_img)
-            val movieName = itemView.findViewById<TextView>(R.id.movie_name)
-            val movieDate = itemView.findViewById<TextView>(R.id.release_date)
-            val movieVoteAverage = itemView.findViewById<TextView>(R.id.vote_average)
+        private var imageListener: OnImageClickListener? = null
 
-            movieImage.load(IMAGE_URL + movie.post)
-            movieName.text = movie.originalTitle.limitedDescription(25)
-            movieDate.text = movie.releaseDate
-            movieVoteAverage.text = movie.voteAverage
+        fun setOnImageClickListener(listener: OnImageClickListener) {
+            this.imageListener = listener
         }
 
 
-    }
+        override fun getItemViewType(position: Int): Int {
+            return when (dataSet[position]) {
+                is RecyclerViewItem.Header -> Commons.HEADER_TYPE
+                is RecyclerViewItem.MovieData -> Commons.LINEAR_TYPE
+                else -> throw IllegalArgumentException("Invalid View type")
+            }
+        }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
+            return when (viewType) {
+                Commons.HEADER_TYPE -> RecyclerViewHolder.HeaderViewHolder(
+                    HeaderListBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+                Commons.LINEAR_TYPE -> {
+                    if (Commons.IS_LINEAR) {
+                        RecyclerViewHolder.LinearListViewHolder(
+                            ListItemBinding.inflate(
+                                LayoutInflater.from(parent.context),
+                                parent,
+                                false
+                            )
+                        )
+                    } else {
+                        RecyclerViewHolder.GridListViewHolder(
+                            GridListBinding.inflate(
+                                LayoutInflater.from(parent.context),
+                                parent,
+                                false
+                            )
+                        )
+                    }
+                }
+                else -> throw IllegalArgumentException("Invalid ViewHolder")
+            }
+        }
 
-        val layout = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
-
-        return ViewHolder(layout)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindData(dataSet[position])
-
-
-        holder.itemView.setOnClickListener {
-            val action = ListFragmentDirections.actionListFragmentToMovieDetailsFragment(
-                IMAGE_URL + dataSet[position].post,
-                dataSet[position].originalTitle,
-                dataSet[position].voteAverage,
-                dataSet[position].movieId
-            )
-            val navController = holder.itemView.findNavController()
-            navController.navigate(action)
+        override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
+            when (holder) {
+                is RecyclerViewHolder.HeaderViewHolder ->{
+                    holder.bind(dataSet[position] as RecyclerViewItem.Header)
+                    holder.iconImgClick.setOnClickListener(click)
+                }
+                is RecyclerViewHolder.LinearListViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.MovieData)
+                is RecyclerViewHolder.GridListViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.MovieData)
+            }
 
         }
 
+        override fun getItemCount(): Int = dataSet.size
+
 
     }
 
-    override fun getItemCount(): Int = dataSet.size
+    class GridMovieAdapter : Adapters() {
 
+        var dataSet = listOf<RecyclerViewItem>()
+
+        fun setMovieList(lives: List<RecyclerViewItem>) {
+            this.dataSet = lives
+            notifyDataSetChanged()
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            return when (dataSet[position]) {
+                is RecyclerViewItem.Header -> Commons.HEADER_TYPE
+                else -> Commons.GRID_TYPE
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
+            return when (viewType) {
+                0 -> RecyclerViewHolder.HeaderViewHolder(
+                    HeaderListBinding.inflate(
+                        LayoutInflater.from(
+                            parent.context
+                        ), parent, false
+                    )
+                )
+                2 -> RecyclerViewHolder.GridListViewHolder(
+                    GridListBinding.inflate(
+                        LayoutInflater.from(
+                            parent.context
+                        ), parent, false
+                    )
+                )
+                else -> throw IllegalArgumentException("Invalid ViewHolder")
+            }
+        }
+
+        override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
+            when (holder) {
+                is RecyclerViewHolder.HeaderViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.Header)
+                is RecyclerViewHolder.GridListViewHolder -> holder.bind((dataSet[position] as RecyclerViewItem.MovieData))
+                else -> throw IllegalArgumentException("Invalid BindViewHolder")
+            }
+
+        }
+
+        override fun getItemCount(): Int = dataSet.size
+
+
+    }
 
 }
+

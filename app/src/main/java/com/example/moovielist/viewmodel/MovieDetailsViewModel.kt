@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.moovielist.datasource.MovieData
-import com.example.moovielist.datasource.MovieDetails
+import com.example.moovielist.datasource.RecyclerViewItem
 import com.example.moovielist.repositories.MoviesDetailsRepository
 import com.example.moovielist.rest.MovieService
 import retrofit2.Call
@@ -14,8 +13,8 @@ import retrofit2.Response
 
 class MovieDetailsViewModel constructor(private val repository: MoviesDetailsRepository) : ViewModel() {
 
-    private val _moviesDetails = MutableLiveData<List<MovieData>>()
-    val moviesDetails : LiveData<List<MovieData>> = _moviesDetails
+    private val _moviesDetails = MutableLiveData<List<RecyclerViewItem.MovieData>>()
+    val moviesDetails : LiveData<List<RecyclerViewItem.MovieData>> = _moviesDetails
 
     private var _movieId = MutableLiveData<Int>()
     val movieId get() = _movieId
@@ -34,8 +33,8 @@ class MovieDetailsViewModel constructor(private val repository: MoviesDetailsRep
     fun getMoviesDetails(){
 
         val responseDetails = repository.getDetails()
-        responseDetails.enqueue(object : Callback<MovieDetails> {
-            override fun onResponse(call: Call<MovieDetails>, response: Response<MovieDetails>) {
+        responseDetails.enqueue(object : Callback<RecyclerViewItem.MovieDetails> {
+            override fun onResponse(call: Call<RecyclerViewItem.MovieDetails>, response: Response<RecyclerViewItem.MovieDetails>) {
                     response.body()?.apply {
                         _overview.value = this.overview
                         _voteCount.value = this.voteCount
@@ -48,7 +47,7 @@ class MovieDetailsViewModel constructor(private val repository: MoviesDetailsRep
                     }
             }
 
-            override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
+            override fun onFailure(call: Call<RecyclerViewItem.MovieDetails>, t: Throwable) {
                 Log.e("failed", "" + t.message)
             }
         })

@@ -1,7 +1,6 @@
 package com.example.moovielist.rest
 
-import com.example.moovielist.datasource.MovieDetails
-import com.example.moovielist.datasource.MovieResponse
+import com.example.moovielist.datasource.RecyclerViewItem
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Call
@@ -13,10 +12,10 @@ import retrofit2.http.Path
 interface MovieService {
 
     @GET("now_playing?api_key=b0b3c17892a58c619ef49d6e3010d379&language=pt-BR&page=1")
-    fun getMovies(): Call<MovieResponse>
+    fun getMovies(): Call<RecyclerViewItem.MovieResponse>
 
     @GET("{movie_id}?api_key=b0b3c17892a58c619ef49d6e3010d379&language=pt-BR")
-    fun getDetails(@Path("movie_id") movieId: String): Call<MovieDetails>
+    fun getDetails(@Path("movie_id") movieId: String): Call<RecyclerViewItem.MovieDetails>
 
     companion object {
         const val BASE_URL =

@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.moovielist.datasource.MovieData
-import com.example.moovielist.datasource.MovieResponse
+import com.example.moovielist.datasource.RecyclerViewItem
 import com.example.moovielist.repositories.MoviesRepository
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,31 +12,31 @@ import retrofit2.Response
 
 class MovieViewModel constructor(private val repository: MoviesRepository) : ViewModel() {
 
-    private val _movies = MutableLiveData<List<MovieData>>()
-    val movies: LiveData<List<MovieData>> = _movies
+    private val _movies = MutableLiveData<List<RecyclerViewItem>>()
+    val movies: LiveData<List<RecyclerViewItem>> = _movies
 
     private var _isLinearLayout = MutableLiveData(true)
     val isLinearLayout get() = _isLinearLayout
 
 
-    fun switchBooleanLayout(value : Boolean) {
-        _isLinearLayout.value = value
+    fun switchBooleanLayout() {
+        _isLinearLayout.value = !_isLinearLayout.value!!
 
     }
 
     fun getMovies() {
         val responseMovie = repository.getMovies()
-        responseMovie.enqueue(object : Callback<MovieResponse> {
+        responseMovie.enqueue(object : Callback<RecyclerViewItem.MovieResponse> {
             override fun onResponse(
-                call: Call<MovieResponse>,
-                response: Response<MovieResponse>
+                call: Call<RecyclerViewItem.MovieResponse>,
+                response: Response<RecyclerViewItem.MovieResponse>
             ) {
                 val result = response.body()?.result
                 _movies.value = result!!
 
             }
 
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+            override fun onFailure(call: Call<RecyclerViewItem.MovieResponse>, t: Throwable) {
                 Log.e("failed", "" + t.message)
             }
         })
