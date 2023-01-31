@@ -28,9 +28,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     private val binding get() = _binding!!
     private lateinit var viewModel: MovieViewModel
 
-    private var linearAdapter = Adapters.MovieAdapter() {
-        clickIcon()
-    }
+    private lateinit var linearAdapter : Adapters.MovieAdapter
     private val retrofitService = MovieService.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,19 +46,20 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentListBinding.inflate(inflater, container, false)
+        viewModel.isLinearLayout.observe(viewLifecycleOwner){
+
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        linearAdapter = Adapters.MovieAdapter(viewModel.isLinearLayout.value!!) {
+            clickIcon()
+        }
         binding.recyclerView.adapter = linearAdapter
         setDataRecyclerView(R.drawable.ic_grid_view)
-        linearAdapter.setOnImageClickListener(object : Adapters.MovieAdapter.OnImageClickListener {
-            override fun onImageClick(position: Int) {
-                clickIcon()
-            }
 
-        })
 
     }
 
@@ -97,33 +96,34 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
 
     private fun clickIcon() {
-        Commons.IS_LINEAR = !Commons.IS_LINEAR
+        viewModel.switchBooleanLayout()
 
-        if (Commons.IS_LINEAR) {
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            linearAdapter = Adapters.MovieAdapter { clickIcon() }
-            binding.recyclerView.adapter = linearAdapter
-            setDataRecyclerView(R.drawable.ic_grid_view)
-        } else {
-            val layoutManager = GridLayoutManager(requireContext(), 2)
-            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return when (position) {
-                        0 -> 2
-                        else -> 1
+        viewModel.isLinearLayout.observe(viewLifecycleOwner){
+            if (it) {
+                binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                linearAdapter = Adapters.MovieAdapter(it) { clickIcon() }
+                binding.recyclerView.adapter = linearAdapter
+                setDataRecyclerView(R.drawable.ic_grid_view)
+            } else {
+                val layoutManager = GridLayoutManager(requireContext(), 2)
+                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return when (position) {
+                            0 -> 2
+                            else -> 1
+                        }
                     }
                 }
+                binding.recyclerView.layoutManager = layoutManager
+                linearAdapter = Adapters.MovieAdapter(it) { clickIcon() }
+                binding.recyclerView.adapter = linearAdapter
+                setDataRecyclerView(R.drawable.ic_list_view)
+
             }
-            binding.recyclerView.layoutManager = layoutManager
-            linearAdapter = Adapters.MovieAdapter { clickIcon() }
-            binding.recyclerView.adapter = linearAdapter
-            setDataRecyclerView(R.drawable.ic_list_view)
 
         }
 
-
     }
-
 }
 
 

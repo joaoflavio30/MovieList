@@ -15,7 +15,8 @@ sealed class Adapters :
     RecyclerView.Adapter<RecyclerViewHolder>() {
 
 
-    class MovieAdapter(private val click : (View) -> Unit) : Adapters() {
+    class MovieAdapter(private val isLinear: Boolean, private val click: (View) -> Unit) :
+        Adapters() {
 
         var dataSet = listOf<RecyclerViewItem>()
 
@@ -23,17 +24,6 @@ sealed class Adapters :
             this.dataSet = lives
             notifyDataSetChanged()
         }
-
-        interface OnImageClickListener {
-            fun onImageClick(position: Int)
-        }
-
-        private var imageListener: OnImageClickListener? = null
-
-        fun setOnImageClickListener(listener: OnImageClickListener) {
-            this.imageListener = listener
-        }
-
 
         override fun getItemViewType(position: Int): Int {
             return when (dataSet[position]) {
@@ -53,7 +43,7 @@ sealed class Adapters :
                     )
                 )
                 Commons.LINEAR_TYPE -> {
-                    if (Commons.IS_LINEAR) {
+                    if (isLinear) {
                         RecyclerViewHolder.LinearListViewHolder(
                             ListItemBinding.inflate(
                                 LayoutInflater.from(parent.context),
@@ -77,7 +67,7 @@ sealed class Adapters :
 
         override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
             when (holder) {
-                is RecyclerViewHolder.HeaderViewHolder ->{
+                is RecyclerViewHolder.HeaderViewHolder -> {
                     holder.bind(dataSet[position] as RecyclerViewItem.Header)
                     holder.iconImgClick.setOnClickListener(click)
                 }
