@@ -64,12 +64,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
 
     private fun setDataRecyclerView(iconImage: Int) {
-        linearAdapter.setMovieList(
-            listOf(
-                RecyclerViewItem.Header(
-                    iconImage,
-                    getString(R.string.header_title),
-                    getString(R.string.header_year))))
         viewModel.movies.observe(viewLifecycleOwner) {
             val list = mutableListOf<RecyclerViewItem>()
            list.add(

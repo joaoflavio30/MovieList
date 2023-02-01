@@ -3,8 +3,8 @@ package com.example.moovielist.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.example.moovielist.R
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.ListAdapter
 import com.example.moovielist.databinding.GridListBinding
 import com.example.moovielist.databinding.HeaderListBinding
 import com.example.moovielist.databinding.ListItemBinding
@@ -12,21 +12,19 @@ import com.example.moovielist.datasource.RecyclerViewItem
 import com.example.moovielist.utils.Commons
 
 sealed class Adapters :
-    RecyclerView.Adapter<RecyclerViewHolder>() {
-
+    ListAdapter<RecyclerViewItem,RecyclerViewHolder>(ListMovieDiffUtil()) {
 
     class MovieAdapter(private val isLinear: Boolean, private val click: (View) -> Unit) :
         Adapters() {
 
-        var dataSet = listOf<RecyclerViewItem>()
+        private val asyncListDiffer: AsyncListDiffer<RecyclerViewItem> = AsyncListDiffer(this, ListMovieDiffUtil())
 
         fun setMovieList(lives: List<RecyclerViewItem>) {
-            this.dataSet = lives
-            notifyDataSetChanged()
+           asyncListDiffer.submitList(lives)
         }
 
         override fun getItemViewType(position: Int): Int {
-            return when (dataSet[position]) {
+            return when (asyncListDiffer.currentList[position]) {
                 is RecyclerViewItem.Header -> Commons.HEADER_TYPE
                 is RecyclerViewItem.MovieData -> Commons.LINEAR_TYPE
                 else -> throw IllegalArgumentException("Invalid View type")
@@ -68,68 +66,15 @@ sealed class Adapters :
         override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
             when (holder) {
                 is RecyclerViewHolder.HeaderViewHolder -> {
-                    holder.bind(dataSet[position] as RecyclerViewItem.Header)
+                    holder.bind(asyncListDiffer.currentList[position] as RecyclerViewItem.Header)
                     holder.iconImgClick.setOnClickListener(click)
                 }
-                is RecyclerViewHolder.LinearListViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.MovieData)
-                is RecyclerViewHolder.GridListViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.MovieData)
+                is RecyclerViewHolder.LinearListViewHolder -> holder.bind(asyncListDiffer.currentList[position] as RecyclerViewItem.MovieData)
+                is RecyclerViewHolder.GridListViewHolder -> holder.bind(asyncListDiffer.currentList[position] as RecyclerViewItem.MovieData)
             }
 
         }
-
-        override fun getItemCount(): Int = dataSet.size
-
-
-    }
-
-    class GridMovieAdapter : Adapters() {
-
-        var dataSet = listOf<RecyclerViewItem>()
-
-        fun setMovieList(lives: List<RecyclerViewItem>) {
-            this.dataSet = lives
-            notifyDataSetChanged()
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return when (dataSet[position]) {
-                is RecyclerViewItem.Header -> Commons.HEADER_TYPE
-                else -> Commons.GRID_TYPE
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
-            return when (viewType) {
-                0 -> RecyclerViewHolder.HeaderViewHolder(
-                    HeaderListBinding.inflate(
-                        LayoutInflater.from(
-                            parent.context
-                        ), parent, false
-                    )
-                )
-                2 -> RecyclerViewHolder.GridListViewHolder(
-                    GridListBinding.inflate(
-                        LayoutInflater.from(
-                            parent.context
-                        ), parent, false
-                    )
-                )
-                else -> throw IllegalArgumentException("Invalid ViewHolder")
-            }
-        }
-
-        override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
-            when (holder) {
-                is RecyclerViewHolder.HeaderViewHolder -> holder.bind(dataSet[position] as RecyclerViewItem.Header)
-                is RecyclerViewHolder.GridListViewHolder -> holder.bind((dataSet[position] as RecyclerViewItem.MovieData))
-                else -> throw IllegalArgumentException("Invalid BindViewHolder")
-            }
-
-        }
-
-        override fun getItemCount(): Int = dataSet.size
-
-
+        override fun getItemCount(): Int = asyncListDiffer.currentList.size
     }
 
 }
