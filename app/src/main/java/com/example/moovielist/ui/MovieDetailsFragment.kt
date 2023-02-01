@@ -34,18 +34,12 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
         retrieveArgs()
         binding.backBtn.setOnClickListener {
-            actionBack()
+            findNavController().popBackStack()
         }
 
          viewModel.getMoviesDetails()
 
       bindItems()
-    }
-
-
-    private fun actionBack() {
-        val action = MovieDetailsFragmentDirections.actionMovieDetailsFragmentToListFragment()
-        findNavController().navigate(action)
     }
 
     private fun retrieveArgs() {

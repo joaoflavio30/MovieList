@@ -64,6 +64,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
 
     private fun setDataRecyclerView(iconImage: Int) {
+
         viewModel.movies.observe(viewLifecycleOwner) {
             val list = mutableListOf<RecyclerViewItem>()
            list.add(

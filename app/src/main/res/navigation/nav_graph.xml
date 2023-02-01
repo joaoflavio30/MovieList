@@ -21,17 +21,20 @@
         tools:layout="@layout/fragment_movie_details" >
         <action
             android:id="@+id/action_movieDetailsFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/listFragment"
+            app:launchSingleTop="false"
+            app:popUpToInclusive="false" />
         <argument
             android:name="movie_image"
+            app:argType="string" />
+        <argument
+            android:name="movie_note"
             app:argType="string" />
         <argument
             android:name="movie_title"
             app:argType="string" />
         <argument
-            android:name="movie_note"
-            app:argType="string" />
-        <argument android:name="movie_id"
+            android:name="movie_id"
             app:argType="integer" />
     </fragment>
 </navigation>
