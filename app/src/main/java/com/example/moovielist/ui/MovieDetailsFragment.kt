@@ -37,9 +37,9 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
             findNavController().popBackStack()
         }
 
-         viewModel.getMoviesDetails()
+        viewModel.getMoviesDetails()
 
-      bindItems()
+        bindItems()
     }
 
     private fun retrieveArgs() {

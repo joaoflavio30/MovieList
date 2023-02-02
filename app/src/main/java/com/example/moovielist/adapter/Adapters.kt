@@ -12,21 +12,23 @@ import com.example.moovielist.datasource.RecyclerViewItem
 import com.example.moovielist.utils.Commons
 
 sealed class Adapters :
-    ListAdapter<RecyclerViewItem,RecyclerViewHolder>(ListMovieDiffUtil()) {
+    ListAdapter<RecyclerViewItem, RecyclerViewHolder>(ListMovieDiffUtil()) {
 
     class MovieAdapter(private val isLinear: Boolean, private val click: (View) -> Unit) :
         Adapters() {
 
-        private val asyncListDiffer: AsyncListDiffer<RecyclerViewItem> = AsyncListDiffer(this, ListMovieDiffUtil())
+        private val asyncListDiffer: AsyncListDiffer<RecyclerViewItem> =
+            AsyncListDiffer(this, ListMovieDiffUtil())
 
         fun setMovieList(lives: List<RecyclerViewItem>) {
-           asyncListDiffer.submitList(lives)
+            asyncListDiffer.submitList(lives)
         }
 
         override fun getItemViewType(position: Int): Int {
             return when (asyncListDiffer.currentList[position]) {
                 is RecyclerViewItem.Header -> Commons.HEADER_TYPE
                 is RecyclerViewItem.MovieData -> Commons.LINEAR_TYPE
+                is RecyclerViewItem.MovieDetails -> Commons.MOVIE_DETAILS_TYPE
                 else -> throw IllegalArgumentException("Invalid View type")
             }
         }
@@ -71,9 +73,11 @@ sealed class Adapters :
                 }
                 is RecyclerViewHolder.LinearListViewHolder -> holder.bind(asyncListDiffer.currentList[position] as RecyclerViewItem.MovieData)
                 is RecyclerViewHolder.GridListViewHolder -> holder.bind(asyncListDiffer.currentList[position] as RecyclerViewItem.MovieData)
+               else -> throw IllegalArgumentException("No RecyclerViewHolder")
             }
 
         }
+
         override fun getItemCount(): Int = asyncListDiffer.currentList.size
     }
 
